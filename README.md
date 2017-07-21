@@ -40,3 +40,25 @@ or
 
 $ ./TerminalGameEngine8Test1 --help
 
+
+To include in C++ programm include the screen.cpp file at the top of the code:
+
+<include screen.cpp>
+
+Then initialize the screen class object with the name of the class screen and the name of the object you select. 
+Example text:
+
+screen S;
+
+Then call the funcion you want with the parameters of the function:
+Example text:
+Ex 1.
+
+
+S.Start(24, 80, 500, 1) // screen height, screen width, game speed, gamemap on
+
+
+Ex 2. 
+
+S.DrawHorzLine(5, 5, 10) // startY position, startX position, line length
+
