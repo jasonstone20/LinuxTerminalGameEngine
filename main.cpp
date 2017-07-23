@@ -4,13 +4,16 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string>
+#include <signal.h>
 
 #include "screen.h"
 
+void resizeHandler(int);
 
 int main (int NumArg, char* Args[])
 {
     screen S;
+    signal(SIGWINCH, resizeHandler);
     std::cout <<NumArg;
     switch(NumArg)
     {
@@ -66,3 +69,10 @@ int main (int NumArg, char* Args[])
     //S.DrawDiagUpLine(10,10,10);
     //S.print_in_middle(stdscr, LINES / 2, 0, 0, "Viola !!! In color ...");
 }
+
+ void resizeHandler(int sig)
+     {
+          int nh, nw;
+          getmaxyx(stdscr, nh, nw);  /* get the new screen size */
+          //...
+     }

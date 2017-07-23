@@ -10,7 +10,8 @@ screen::screen()
 	keypad(stdscr, true);			//init the keyboard
 	noecho();									//don't write
 	curs_set(0);							//cursor invisible
-	getmaxyx(stdscr,maxHeight,maxWidth);
+	getmaxyx(stdscr, maxHeight, maxWidth);
+
 	//partchar='x';
 	//partchar = (char)200;
 
@@ -23,6 +24,7 @@ screen::screen()
 	testHorizontal = '#';
 	oldalchar=(char)219;
 	//etel='*';
+	GamePlay = true;
 	GameOver = "Game Over!";
 	etel = (char)219;
 	//food.x=0;
@@ -63,6 +65,7 @@ void screen::GetScreenSize()
     getch();
     nodelay(stdscr, true);
 }
+
 
 void screen::print_in_middle(WINDOW *win, int starty, int startx, int width, char *string)
 {	int length, x, y;
@@ -264,7 +267,11 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
 //    std::cout << width << std::endl;
 //    std::cout << forecolor << std::endl;
 //    std::cout << backcolor << std::endl;
-
+    if (height > maxHeight ||width > maxWidth ||speed < 50 || GameMapOn > 1)
+        {
+            printw("Error, please adjust your screen size or re-enter settings\n");
+            exit(0);
+        }
     if (height == 0 && width == 0)
     {
         height = maxHeight;
@@ -275,7 +282,7 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
     speed = del;
     clear();
     //GetScreenSize();
-    while (1)
+    while (GamePlay)
     {
 //      GameMap(height, width);
         DisplayScreen(height, width, GameMapOn);
@@ -284,16 +291,20 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
 //       || PlayerY == 0 || PlayerY == maxHeight - 2 )
         if (PlayerX == 0 || PlayerX == width - 2
          || PlayerY == 0 || PlayerY == height - 2 )
+//            Collision();
+
         {
             move(height / 2, width / 2);
             printw("Game Over!");
-            break;
+            GamePlay = false;
+            //break;
         }
         if( direction == 'q')				//exit
 		{
             move(height / 2, width / 2);
             printw("Game Over!");
-            break;
+            GamePlay = false;
+            //break;
         }
      napms(del); // or use usleep(100000)
     }
@@ -321,6 +332,7 @@ void screen::TurnBased(int height, int width, int speed, bool GameMapOn)
         MovePlayer();
         getch();
         refresh();
+        // Collision Detection
 //      if (PlayerX == 0 || PlayerX == maxWidth - 2
 //       || PlayerY == 0 || PlayerY == maxHeight - 2 )
         if (PlayerX == 0 || PlayerX == width - 2
@@ -356,28 +368,42 @@ void screen::MovePlayer()
 	switch(tmp)
 	{
 		case KEY_LEFT:
-			if(direction != 'r')
+			//if(direction != 'r')
 				direction = 'l';
 			break;
 
 		case KEY_UP:
-			if(direction != 'd')
+			//if(direction != 'd')
 				direction = 'u';
 			break;
 
 		case KEY_DOWN:
-			if(direction != 'u')
+			//if(direction != 'u')
 				direction = 'd';
 			break;
 
 		case KEY_RIGHT:
-			if(direction != 'l')
+			//if(direction != 'l')
                 direction = 'r';
 			break;
-
+        case KEY_HOME : //'q':
+            direction = 'w';
+            break;
+        case KEY_END: //'z':
+            direction = 'a';
+            break;
+        case KEY_PPAGE: // 'e':
+            direction = 'x';
+            break;
+        case KEY_NPAGE: //'c':
+            direction = 'c';
+            break;
         case KEY_F(1):
 			direction = 'q';
 			break;
+		case KEY_ENTER:
+            direction = 's';
+            break;
 	}
 
 	if (!get)
@@ -402,8 +428,32 @@ void screen::MovePlayer()
 	{
 		PlayerY++;
     }
+    else if (direction == 's')
+    {
+        PlayerY = PlayerY;
+        PlayerX = PlayerX;
+    }
 
-
+    else if (direction == 'a')
+    {
+        PlayerX--;
+        PlayerY++;
+    }
+    else if (direction == 'w')
+    {
+        PlayerX--;
+        PlayerY--;
+    }
+    else if (direction == 'x')
+    {
+        PlayerX++;
+        PlayerY--;
+    }
+    else if (direction == 'c')
+    {
+        PlayerX++;
+        PlayerY++;
+    }
 		//Print Player
 
     //move(PlayerY,PlayerX);
