@@ -64,7 +64,7 @@ S.DrawHorzLine(5, 5, 10) // startY position, startX position, line length
 
 
 -----------------------
-The default controls for the movement of the player character are the cursur keys, cursor/number pad:
+The default controls for the movement of the player character are the cursor keys, cursor/number pad:
 
 Key Up: Up
 Key Down: Down
