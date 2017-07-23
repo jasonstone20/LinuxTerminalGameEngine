@@ -66,13 +66,21 @@ S.DrawHorzLine(5, 5, 10) // startY position, startX position, line length
 -----------------------
 The default controls for the movement of the player character are the cursor keys, cursor/number pad:
 
-Key Up: Up
-Key Down: Down
-Key Right: Right
-Key Left: Left
-Key Home: Diagonal Up/Left
-Key End: Diagonal Down/Left
-Key PgUp: Diagonal Up/Right
-Key PgDn: Diagonal Down/Right
+Key Up: Up,
+
+Key Down: Down,
+
+Key Right: Right,
+
+Key Left: Left,
+
+Key Home: Diagonal Up/Left,
+
+Key End: Diagonal Down/Left,
+
+Key PgUp: Diagonal Up/Right,
+
+Key PgDn: Diagonal Down/Right,
+
 Key Enter: Stop
 
