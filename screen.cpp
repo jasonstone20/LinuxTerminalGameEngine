@@ -92,7 +92,7 @@ void screen::EditColor(int colorName, int redColor, int greenColor, int blueColo
     init_color(colorName, redColor, greenColor, blueColor);
 }
 
-void screen::ColorFill(int foreColor, int backColor, bool colorOn)
+void screen::ColorFill(int posY, int posX, int foreColor, int backColor, char displayChar,  bool colorOn)
 {
 
     //initscr();			/* Start curses mode 		*/
@@ -105,19 +105,37 @@ void screen::ColorFill(int foreColor, int backColor, bool colorOn)
 	start_color();			/* Start color 			*/
 	//init_pair(1, COLOR_RED, COLOR_BLACK);
 	//foreColor = rand() % 10;
-	init_pair(1, foreColor, backColor);
-    attron(COLOR_PAIR(colorOn));
+
 	for (int i = 0; i < maxWidth; i++)
 	{
+
         printw("\n");
-        for (int j = 0; j < maxHeight; j++)
+
+       // foreColor = rand() % 20;
+       // backColor = rand() % 10;
+
+        for (int j = 0; j < maxHeight; j++) //add posY++ or posX++ to fill
         {
-            move(j, i);
-            printw("#");
+            //move(posY, j) //hoizontal line
+            //move( j, posX) //vertical line
+            foreColor = rand() % 20;
+            init_pair(1, foreColor, backColor);
+            attron(COLOR_PAIR(1));
+            printw("%c", displayChar);
+            //init_pair(1, foreColor, 0);
+
+            attron(COLOR_PAIR(1));
+         //   printw("%d \n", foreColor);
+
+
+
+            //move(j, i); //file the whole screen
+            //addch(ACS_CKBOARD); //use displayChar varible here
         }
-	}
+
+     }
 	//print_in_middle(stdscr, LINES / 2, 0, 0, "Viola !!! In color ...");
-    attroff(COLOR_PAIR(0));
+
     //refresh;
     getch();
 	//endwin();
@@ -252,11 +270,11 @@ void screen::SimpleStart()
 {
     while(1)
     {
-        ColorFill(1,0,1);
+     //   ColorFill(10, 10, 1, 0, '*', 1);
 
     }
 }
-void screen::Start(int height, int width, int speed, bool GameMapOn)
+void screen::StartAuto(int height, int width, int speed, bool GameMapOn)
 {
     //std::cout << "Jason" << std::endl;
     //std::cout << "Test" << std::endl;
@@ -267,6 +285,7 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
 //    std::cout << width << std::endl;
 //    std::cout << forecolor << std::endl;
 //    std::cout << backcolor << std::endl;
+    ScreenSize = true;
     if (height > maxHeight ||width > maxWidth ||speed < 50 || GameMapOn > 1)
         {
             printw("Error, please adjust your screen size or re-enter settings\n");
@@ -282,11 +301,19 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
     speed = del;
     clear();
     //GetScreenSize();
+    DisplayScreen(height, width, GameMapOn);
     while (GamePlay)
     {
 //      GameMap(height, width);
+        int width = COLS;
+        int height = LINES;
         DisplayScreen(height, width, GameMapOn);
         MovePlayer();
+       // ScreenResize();
+
+
+        //DisplayScreen(height, width, GameMapOn);
+        //MovePlayer();
 //      if (PlayerX == 0 || PlayerX == maxWidth - 2
 //       || PlayerY == 0 || PlayerY == maxHeight - 2 )
         if (PlayerX == 0 || PlayerX == width - 2
@@ -309,7 +336,71 @@ void screen::Start(int height, int width, int speed, bool GameMapOn)
      napms(del); // or use usleep(100000)
     }
 
+
 }
+
+void screen::StartFixed(int height, int width, int speed, bool GameMapOn)
+{
+    //std::cout << "Jason" << std::endl;
+    //std::cout << "Test" << std::endl;
+    //std::cout << "Hello" << std::endl;
+    //std::cout << maxHeight;
+    //moveplayer();
+//    std::cout << height << std::endl;
+//    std::cout << width << std::endl;
+//    std::cout << forecolor << std::endl;
+//    std::cout << backcolor << std::endl;
+    ScreenSize = false;
+    if (height > maxHeight ||width > maxWidth ||speed < 50 || GameMapOn > 1)
+        {
+            printw("Error, please adjust your screen size or re-enter settings\n");
+            exit(0);
+        }
+    if (height == 0 && width == 0)
+    {
+        height = maxHeight;
+        width = maxWidth;
+    }
+    PlayerX = width / 2;
+    PlayerY = height / 2;
+    speed = del;
+    clear();
+    //GetScreenSize();
+    while (GamePlay)
+    {
+//      GameMap(height, width);
+        DisplayScreen(height, width, GameMapOn);
+        MovePlayer();
+       // ScreenResize();
+
+
+        //DisplayScreen(height, width, GameMapOn);
+        //MovePlayer();
+//      if (PlayerX == 0 || PlayerX == maxWidth - 2
+//       || PlayerY == 0 || PlayerY == maxHeight - 2 )
+        if (PlayerX == 0 || PlayerX == width - 2
+         || PlayerY == 0 || PlayerY == height - 2 )
+//            Collision();
+
+        {
+            move(height / 2, width / 2);
+            printw("Game Over!");
+            GamePlay = false;
+            //break;
+        }
+        if( direction == 'q')				//exit
+		{
+            move(height / 2, width / 2);
+            printw("Game Over!");
+            GamePlay = false;
+            //break;
+        }
+     napms(del); // or use usleep(100000)
+    }
+
+
+}
+
 
 void screen::TurnBased(int height, int width, int speed, bool GameMapOn)
 {
@@ -398,13 +489,20 @@ void screen::MovePlayer()
         case KEY_NPAGE: //'c':
             direction = 'c';
             break;
-        case KEY_F(1):
+        case KEY_BACKSPACE:
 			direction = 'q';
 			break;
 		case KEY_ENTER:
             direction = 's';
             break;
+
+        case KEY_RESIZE:
+        {
+            ScreenResize();
+            break;
+        }
 	}
+
 
 	if (!get)
 	{
@@ -454,6 +552,10 @@ void screen::MovePlayer()
         PlayerX++;
         PlayerY++;
     }
+//    else if (direction == 'q')
+//    {
+//        printw("quit");
+//    }
 		//Print Player
 
     //move(PlayerY,PlayerX);
@@ -538,4 +640,19 @@ void screen::GameMap(int height, int width)
     refresh();
 }
 
+void screen::ScreenResize()
+{
+    if (ScreenSize == true)
+    {
+        clear();
+        int width = COLS;
+        int height = LINES;
+        DisplayScreen(height, width, GameMapOn);
+        refresh();
+    }
+    else
+    {
+        clear();
+    }
+}
 
