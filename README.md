@@ -84,3 +84,12 @@ Key PgDn: Diagonal Down/Right,
 
 Key Enter: Stop
 
+
+
+Auto Game Window Resize 
+
+Select StartAuto in main.cpp
+
+Fixed Game Window
+
+Select StartFixed in main.cpp
